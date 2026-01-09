@@ -1,34 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Fpv Chimes</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FPV Chimes Upload</title>
+<style>
+body {
+    background: #0e0e1a;
+    color: #eee;
+    font-family: "Arial", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+}
+
+h1 {
+    color: #ff6600;
+    margin-bottom: 20px;
+}
+
+#uploadForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #1a1a2e;
+    padding: 20px;
+    border-radius: 12px;
+    width: 300px;
+}
+
+input, button {
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+}
+
+input[type="text"] {
+    width: 100%;
+}
+
+button {
+    background: #ff6600;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #ff9933;
+}
+
+#songList {
+    margin-top: 30px;
+    width: 400px;
+}
+
+.songItem {
+    background: #1a1a2e;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+</style>
 </head>
 <body>
-  <header>Fpv chimes</header>
 
-  <section class="editor">
-    <input id="name" placeholder="Song name">
-    <input id="author" placeholder="Pilot handle">
+<h1>FPV Chimes Upload</h1>
 
-    <div class="keys">
-      <button onclick="add('C5')">C</button>
-      <button onclick="add('D5')">D</button>
-      <button onclick="add('E5')">E</button>
-      <button onclick="add('F5')">F</button>
-      <button onclick="add('G5')">G</button>
-      <button onclick="add('A5')">A</button>
-    </div>
+<div id="uploadForm">
+    <input type="text" id="songName" placeholder="Enter song name">
+    <input type="file" id="fileInput">
+    <button id="uploadBtn">Upload Song</button>
+</div>
 
-    <pre id="melody"></pre>
-    <button class="upload" onclick="upload()">Upload</button>
-  </section>
+<div id="songList"></div>
 
-  <section>
-    <h2>Community Chimes</h2>
-    <ul id="songs"></ul>
-  </section>
+<script>
+const fileInput = document.getElementById("fileInput");
+const uploadBtn = document.getElementById("uploadBtn");
+const songNameInput = document.getElementById("songName");
+const songList = document.getElementById("songList");
 
-  <script src="app.js"></script>
+const API_URL = "https://fpvchimes-python-api.onrender.com/songs";
+
+async function fetchSongs() {
+    try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        songList.innerHTML = data.songs.map(s => `<div class="songItem"><span>${s.name}</span><span>${s.filename}</span></div>`).join('');
+    } catch (err) {
+        console.error("Error fetching songs:", err);
+    }
+}
+
+uploadBtn.addEventListener("click", async () => {
+    if (!fileInput.files.length) return alert("Select a file first!");
+    const file = fileInput.files[0];
+    const name = songNameInput.value.trim();
+    if (!name) return alert("Enter a song name!");
+
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!["mp3", "midi"].includes(ext)) return alert("Only .mp3 or .midi allowed");
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("name", name);
+
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            body: formData
+        });
+
+        if (!res.ok) throw new Error("Upload failed");
+        const data = await res.json();
+        alert("Song uploaded!");
+        fileInput.value = "";
+        songNameInput.value = "";
+        fetchSongs();
+    } catch (err) {
+        console.error(err);
+        alert("Upload failed. Check console for details.");
+    }
+});
+
+// Load songs on page load
+fetchSongs();
+</script>
+
 </body>
 </html>
