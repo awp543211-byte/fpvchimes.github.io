@@ -17,10 +17,11 @@ app.add_exception_handler(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://fpvchimes.github.io"],  # GitHub Pages URL
+    allow_origins=["https://awp543211-byte.github.io/fpvchimes.github.io"],  # GitHub Pages URL
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.include_router(router)
+
 
