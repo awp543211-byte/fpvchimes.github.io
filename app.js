@@ -1,4 +1,4 @@
-const API = "https://YOUR_RENDER_URL";
+const API = "https://fpvchimes-python-api.onrender.com";
 
 let melody = [];
 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -67,3 +67,4 @@ function exportSong(name, melody) {
 }
 
 load();
+
