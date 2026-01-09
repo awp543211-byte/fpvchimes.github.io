@@ -1,27 +1,24 @@
+# main.py (or app/main.py)
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-from fastapi.responses import JSONResponse
-from app.routes import router
-
-limiter = Limiter(key_func=get_remote_address)
+from app.routes import router as songs_router
 
 app = FastAPI()
-app.state.limiter = limiter
-app.add_exception_handler(
-    RateLimitExceeded,
-    lambda r, e: JSONResponse(status_code=429, content={"error": "Too many requests"})
-)
+
+# Add CORS middleware
+origins = [
+    "https://awp543211-byte.github.io",   # your GitHub Pages frontend
+    "http://localhost:5500",              # optional for local dev
+    "https://fpvchimes.github.io",       # alternative frontend URL
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://awp543211-byte.github.io/fpvchimes.github.io"],  # GitHub Pages URL
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],   # allow GET, POST, OPTIONS, etc.
+    allow_headers=["*"],   # allow custom headers
 )
 
-app.include_router(router)
-
-
+# Include your routes
+app.include_router(songs_router)
