@@ -1,8 +1,7 @@
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
 
-MONGO_URL = os.environ["MONGO_URL"]
+MONGO_URL = os.getenv("MONGO_URL")
 
-client = AsyncIOMotorClient(MONGO_URL)
-db = client.bluejay
-songs = db.songs
+client = AsyncIOMotorClient(MONGO_URL, tls=True)
+db = client.get_database()
