@@ -6,17 +6,17 @@ app = FastAPI()
 
 # CORS configuration
 origins = [
-    "https://fpvchimes.github.io",          # your GitHub Pages URL
-    "http://localhost:5500",                # optional for local dev
+    "https://awp543211-byte.github.io/fpvchimes.github.io",
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],   # Allow GET, POST, OPTIONS
-    allow_headers=["*"],   # Allow all headers
+    allow_methods=["*"], 
+    allow_headers=["*"], 
 )
 
 # Include your routes
 app.include_router(songs_router)
+
